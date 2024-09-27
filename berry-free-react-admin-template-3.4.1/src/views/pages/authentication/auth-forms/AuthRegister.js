@@ -36,6 +36,11 @@ import { strengthColor, strengthIndicator } from 'utils/password-strength';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
+import axios from 'axios';
+// import { red } from '@mui/material/colors';
+
+import { useNavigate } from 'react-router-dom';
+
 // ===========================|| FIREBASE - REGISTER ||=========================== //
 
 const FirebaseRegister = ({ ...others }) => {
@@ -45,6 +50,7 @@ const FirebaseRegister = ({ ...others }) => {
   const customization = useSelector((state) => state.customization);
   const [showPassword, setShowPassword] = useState(false);
   const [checked, setChecked] = useState(true);
+  const navigate = useNavigate();
 
   const [strength, setStrength] = useState(0);
   const [level, setLevel] = useState();
@@ -65,6 +71,21 @@ const FirebaseRegister = ({ ...others }) => {
     const temp = strengthIndicator(value);
     setStrength(temp);
     setLevel(strengthColor(temp));
+  };
+
+  // Xử lý event Sign up
+  const handleSignUp = () => {
+    axios
+      .post('http://localhost:8800/auth/register', { email, password })
+      .then((response) => {
+        console.log(response.data);
+        alert('User registered successfully');
+        navigate('/');
+      })
+      .catch((error) => {
+        console.log(error);
+        alert('Error during registration');
+      });
   };
 
   useEffect(() => {
@@ -271,7 +292,16 @@ const FirebaseRegister = ({ ...others }) => {
 
             <Box sx={{ mt: 2 }}>
               <AnimateButton>
-                <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="secondary">
+                <Button
+                  onClick={() => handleSignUp()}
+                  disableElevation
+                  disabled={isSubmitting}
+                  fullWidth
+                  size="large"
+                  type="submit"
+                  variant="contained"
+                  color="secondary"
+                >
                   Sign up
                 </Button>
               </AnimateButton>
