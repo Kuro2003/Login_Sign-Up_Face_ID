@@ -7,3 +7,4 @@ connection = mysql.connector(
 )
 
 cursor = connection.cursor()
+

@@ -74,9 +74,9 @@ const FirebaseRegister = ({ ...others }) => {
   };
 
   // Xử lý event Sign up
-  const handleSignUp = () => {
+  const handleSignUp = (values) => {
     axios
-      .post('http://localhost:8800/auth/register', { email, password })
+      .post('http://localhost:8800/auth/register', { email: values.email, password: values.password })
       .then((response) => {
         console.log(response.data);
         alert('User registered successfully');
@@ -84,8 +84,8 @@ const FirebaseRegister = ({ ...others }) => {
       })
       .catch((error) => {
         console.log(error);
-        alert('Error during registration');
-      });
+        alert('Error during registration', error);
+      })
   };
 
   useEffect(() => {
@@ -158,6 +158,7 @@ const FirebaseRegister = ({ ...others }) => {
         onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
           try {
             if (scriptedRef.current) {
+              handleSignUp(values); // Gọi handleSignUp với các giá trị từ Formik
               setStatus({ success: true });
               setSubmitting(false);
             }

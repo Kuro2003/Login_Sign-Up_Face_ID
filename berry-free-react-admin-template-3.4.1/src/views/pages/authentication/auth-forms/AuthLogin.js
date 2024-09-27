@@ -35,6 +35,9 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 import Google from 'assets/images/icons/social-google.svg';
 
+import axios from 'axios';
+import { useNavigate } from 'react-router';
+
 // ============================|| FIREBASE - LOGIN ||============================ //
 
 const FirebaseLogin = ({ ...others }) => {
@@ -56,6 +59,22 @@ const FirebaseLogin = ({ ...others }) => {
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
+
+  const navigate = useNavigate();
+  // Xử lý sự kiện khi người dùng nhấn nút "Sign in"
+  const handleSignIn = (values) => {
+    axios
+      .post('http://localhost:8800/auth/login', { email: values.email, password: values.password })
+      .then((response) => {
+        console.log(response.data);
+        alert('User registered successfully');
+        navigate('/');
+      })
+      .catch((error) => {
+        console.log(error);
+        alert('Error during registration', error);
+      })
+  }
 
   return (
     <>
@@ -131,6 +150,7 @@ const FirebaseLogin = ({ ...others }) => {
         onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
           try {
             if (scriptedRef.current) {
+              handleSignIn(values);
               setStatus({ success: true });
               setSubmitting(false);
             }
