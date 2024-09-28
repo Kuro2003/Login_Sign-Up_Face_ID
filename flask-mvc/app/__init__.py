@@ -2,7 +2,7 @@ from flask import Flask
 from app.packages.auth.controllers.AuthController import auth_blueprint
 from app.controllers import *
 from flask_sqlalchemy import SQLAlchemy
-from app.config.userdb import db
+from app.config.Database import userdb
 from flask_cors import CORS, cross_origin
 
 def create_app():
@@ -15,14 +15,14 @@ def create_app():
     CORS(app,supports_credentials=True)
     
     # Khởi tạo các thành phần mở rộng
-    db.init_app(app)
+    userdb.init_app(app)
     
     with app.app_context():
         # Đăng ký các Blueprint hoặc các route khác nếu cần
         app.register_blueprint(auth_blueprint, url_prefix='/auth')
         
         # Tạo database nếu cần
-        db.create_all()
+        userdb.create_all()
 
     return app
 

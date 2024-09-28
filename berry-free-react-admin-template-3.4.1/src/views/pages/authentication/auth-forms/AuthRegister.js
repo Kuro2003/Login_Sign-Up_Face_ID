@@ -76,7 +76,12 @@ const FirebaseRegister = ({ ...others }) => {
   // Xử lý event Sign up
   const handleSignUp = (values) => {
     axios
-      .post('http://localhost:8800/auth/register', { email: values.email, password: values.password })
+      .post('http://localhost:8800/auth/register', {
+        first_name: values.first_name,
+        last_name: values.last_name,
+        email: values.email,
+        password: values.password
+      })
       .then((response) => {
         console.log(response.data);
         alert('User registered successfully');
@@ -147,11 +152,15 @@ const FirebaseRegister = ({ ...others }) => {
 
       <Formik
         initialValues={{
+          first_name: '',
+          last_name: '',
           email: '',
           password: '',
           submit: null
         }}
         validationSchema={Yup.object().shape({
+          first_name: Yup.string().max(255).required('First Name is required'), // Kiểm tra first_name
+          last_name: Yup.string().max(255).required('Last Name is required'),   // Kiểm tra last_name
           email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
           password: Yup.string().max(255).required('Password is required')
         })}
@@ -180,9 +189,13 @@ const FirebaseRegister = ({ ...others }) => {
                   fullWidth
                   label="First Name"
                   margin="normal"
-                  name="fname"
+                  name="first_name"
                   type="text"
-                  defaultValue=""
+                  value={values.first_name}
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  error={Boolean(touched.first_name && errors.first_name)}
+                  helperText={touched.first_name && errors.first_name}
                   sx={{ ...theme.typography.customInput }}
                 />
               </Grid>
@@ -191,9 +204,13 @@ const FirebaseRegister = ({ ...others }) => {
                   fullWidth
                   label="Last Name"
                   margin="normal"
-                  name="lname"
+                  name="last_name"
                   type="text"
-                  defaultValue=""
+                  value={values.last_name}
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  error={Boolean(touched.last_name && errors.last_name)}
+                  helperText={touched.last_name && errors.last_name}
                   sx={{ ...theme.typography.customInput }}
                 />
               </Grid>

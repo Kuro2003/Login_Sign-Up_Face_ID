@@ -6,9 +6,8 @@ auth_blueprint = Blueprint('auth', __name__)
 # Routes: login
 @auth_blueprint.route('/login', methods=['POST', 'GET'])
 def login():
-    data = request.json
-    email = data.get('email')
-    password = data.get('password')
+    email = request.json.get('email')
+    password = request.json.get('password')
     
     user = AuthService.authenticate_user(email, password)
     
@@ -20,11 +19,13 @@ def login():
 # Routes: register
 @auth_blueprint.route('/register', methods=['POST', 'GET'])
 def register_user():
+    first_name = request.json.get("first_name")
+    last_name = request.json.get("last_name")
     email = request.json.get("email")
     password = request.json.get("password")
     
     if not email or not password:
-        return jsonify({"error": "Email and password are required"}), 400
+        return jsonify({"error": "All Fields are required"}), 400
     
-    return AuthService.register_user(email, password)
+    return AuthService.register_user(first_name,last_name, email, password)
         
