@@ -1,4 +1,4 @@
-
+/* eslint-disable no-unused-vars */
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 
@@ -138,22 +138,13 @@ const FirebaseLogin = ({ ...others }) => {
       <Grid container direction="column" justifyContent="center" spacing={2}>
         {/* Đăng nhập bằng Face ID */}
         <Grid item xs={12}>
-          <Typography variant="h5">Login with Face ID</Typography>
-          <Webcam
-            audio={false}
-            ref={webcamRef}
-            screenshotFormat="image/jpeg"
-            width={720}
-            height={560}
-          />
           <Button
-            variant="contained"
-            onClick={handleLoginWithFaceID}
-            disabled={loading}
+            variant="outlined"
+            onClick={() => navigate('/pages/login/login-face-id')} // Chuyển hướng đến trang Login Face ID
             fullWidth
             sx={{ mt: 2 }}
           >
-            {loading ? 'Processing...' : 'Login with Face ID'}
+            Login with Face ID
           </Button>
         </Grid>
 

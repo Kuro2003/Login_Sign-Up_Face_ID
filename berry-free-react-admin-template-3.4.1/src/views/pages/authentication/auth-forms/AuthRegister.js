@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+/* eslint-disable no-unused-vars */
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
@@ -37,11 +38,8 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 import axios from 'axios';
-// import { red } from '@mui/material/colors';
-
+import Webcam from 'react-webcam';
 import { useNavigate } from 'react-router-dom';
-
-// ===========================|| FIREBASE - REGISTER ||=========================== //
 
 const FirebaseRegister = ({ ...others }) => {
   const theme = useTheme();
@@ -50,10 +48,12 @@ const FirebaseRegister = ({ ...others }) => {
   const customization = useSelector((state) => state.customization);
   const [showPassword, setShowPassword] = useState(false);
   const [checked, setChecked] = useState(true);
-  const navigate = useNavigate();
-
   const [strength, setStrength] = useState(0);
   const [level, setLevel] = useState();
+  const [loading, setLoading] = useState(false);   // Quản lý trạng thái "Processing"
+  const [processingDone, setProcessingDone] = useState(false); // Trạng thái khi đã xử lý xong
+  const [imageSrc, setImageSrc] = useState(null);  // Lưu ảnh đã chụp
+  const webcamRef = useRef(null);  // Webcam
 
   const googleHandler = async () => {
     console.error('Register');
@@ -73,7 +73,8 @@ const FirebaseRegister = ({ ...others }) => {
     setLevel(strengthColor(temp));
   };
 
-  // Xử lý event Sign up
+  const navigate = useNavigate();
+  // Trong hàm handleSignUp:
   const handleSignUp = (values) => {
     axios
       .post('http://localhost:8800/auth/register', {
@@ -85,12 +86,67 @@ const FirebaseRegister = ({ ...others }) => {
       .then((response) => {
         console.log(response.data);
         alert('User registered successfully');
-        navigate('/');
+        // Chuyển hướng sang trang đăng ký Face ID
+        navigate(`/pages/register/register-face-id?email=${values.email}`); // Gửi email thông qua query params
       })
       .catch((error) => {
         console.log(error);
         alert('Error during registration', error);
-      })
+      });
+  };
+
+
+  // Hàm chụp ảnh từ webcam và gửi ảnh đến backend để đăng ký Face ID
+  const handleRegisterWithFaceID = async (email) => {
+    setLoading(true);  // Hiển thị trạng thái "Processing..."
+    const capturedImage = webcamRef.current.getScreenshot();  // Chụp ảnh từ webcam
+
+    if (capturedImage) {
+      const imageBlob = dataURLtoBlob(capturedImage);  // Chuyển base64 sang blob
+      const formData = new FormData();
+      formData.append('image', imageBlob, 'face_image.jpg');  // Tạo form-data để gửi file ảnh
+      formData.append('email', email);  // Gửi email
+
+      try {
+        const response = await axios.post('http://localhost:8800/auth/register_face', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+
+        if (response.status === 200) {
+          alert('Face ID registered successfully!');
+          setImageSrc(capturedImage);  // Lưu lại ảnh đã chụp sau khi đăng ký thành công
+          setProcessingDone(true);     // Đánh dấu quá trình xử lý đã xong
+        } else {
+          alert(`Failed to register Face ID: ${response.data.message}`);
+        }
+      } catch (error) {
+        console.error('Error during Face ID registration:', error.response ? error.response.data : error.message);
+        alert('An error occurred during registration.');
+      } finally {
+        setLoading(false);  // Kết thúc trạng thái "Processing"
+      }
+    } else {
+      alert('Failed to capture image from webcam');
+      setLoading(false);
+    }
+  };
+
+  // Hàm reset để chụp lại ảnh
+  const handleReset = () => {
+    setImageSrc(null);         // Xóa ảnh đã chụp
+    setProcessingDone(false);  // Đặt lại trạng thái để có thể chụp lại
+  };
+
+  // Hàm chuyển base64 sang blob để gửi file ảnh
+  const dataURLtoBlob = (dataurl) => {
+    let arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+      bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new Blob([u8arr], { type: mime });
   };
 
   useEffect(() => {
@@ -100,49 +156,6 @@ const FirebaseRegister = ({ ...others }) => {
   return (
     <>
       <Grid container direction="column" justifyContent="center" spacing={2}>
-        <Grid item xs={12}>
-          <AnimateButton>
-            <Button
-              variant="outlined"
-              fullWidth
-              onClick={googleHandler}
-              size="large"
-              sx={{
-                color: 'grey.700',
-                backgroundColor: theme.palette.grey[50],
-                borderColor: theme.palette.grey[100]
-              }}
-            >
-              <Box sx={{ mr: { xs: 1, sm: 2, width: 20 } }}>
-                <img src={Google} alt="google" width={16} height={16} style={{ marginRight: matchDownSM ? 8 : 16 }} />
-              </Box>
-              Sign up with Google
-            </Button>
-          </AnimateButton>
-        </Grid>
-        <Grid item xs={12}>
-          <Box sx={{ alignItems: 'center', display: 'flex' }}>
-            <Divider sx={{ flexGrow: 1 }} orientation="horizontal" />
-            <Button
-              variant="outlined"
-              sx={{
-                cursor: 'unset',
-                m: 2,
-                py: 0.5,
-                px: 7,
-                borderColor: `${theme.palette.grey[100]} !important`,
-                color: `${theme.palette.grey[900]}!important`,
-                fontWeight: 500,
-                borderRadius: `${customization.borderRadius}px`
-              }}
-              disableRipple
-              disabled
-            >
-              OR
-            </Button>
-            <Divider sx={{ flexGrow: 1 }} orientation="horizontal" />
-          </Box>
-        </Grid>
         <Grid item xs={12} container alignItems="center" justifyContent="center">
           <Box sx={{ mb: 2 }}>
             <Typography variant="subtitle1">Sign up with Email address</Typography>
@@ -224,7 +237,6 @@ const FirebaseRegister = ({ ...others }) => {
                 name="email"
                 onBlur={handleBlur}
                 onChange={handleChange}
-                inputProps={{}}
               />
               {touched.email && errors.email && (
                 <FormHelperText error id="standard-weight-helper-text--register">
@@ -259,7 +271,6 @@ const FirebaseRegister = ({ ...others }) => {
                     </IconButton>
                   </InputAdornment>
                 }
-                inputProps={{}}
               />
               {touched.password && errors.password && (
                 <FormHelperText error id="standard-weight-helper-text-password-register">
@@ -311,7 +322,6 @@ const FirebaseRegister = ({ ...others }) => {
             <Box sx={{ mt: 2 }}>
               <AnimateButton>
                 <Button
-                  onClick={() => handleSignUp()}
                   disableElevation
                   disabled={isSubmitting}
                   fullWidth
