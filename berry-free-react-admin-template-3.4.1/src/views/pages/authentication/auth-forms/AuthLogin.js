@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 
@@ -38,6 +39,9 @@ import Google from 'assets/images/icons/social-google.svg';
 import axios from 'axios';
 import { useNavigate } from 'react-router';
 
+import Webcam from 'react-webcam';
+import { useRef } from 'react';
+
 // ============================|| FIREBASE - LOGIN ||============================ //
 
 const FirebaseLogin = ({ ...others }) => {
@@ -61,13 +65,14 @@ const FirebaseLogin = ({ ...others }) => {
   };
 
   const navigate = useNavigate();
-  // Xử lý sự kiện khi người dùng nhấn nút "Sign in"
+
+  // Xử lý sự kiện: login bằng email và password khi người dùng nhấn nút "Sign in"
   const handleSignIn = (values) => {
     axios
       .post('http://localhost:8800/auth/login', { email: values.email, password: values.password })
       .then((response) => {
         console.log(response.data);
-        alert('User registered successfully');
+        alert('User Logging in successfully');
         navigate('/');
       })
       .catch((error) => {
@@ -76,9 +81,88 @@ const FirebaseLogin = ({ ...others }) => {
       })
   }
 
+  const webcamRef = useRef(null);
+  const [loading, setLoading] = useState(false);
+
+  // Hàm chuyển base64 sang blob để gửi file ảnh
+  const dataURLtoBlob = (dataurl) => {
+    let arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+      bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new Blob([u8arr], { type: mime });
+  };
+
+  // Hàm chụp ảnh từ webcam và gửi ảnh đến backend dưới dạng file
+  const handleLoginWithFaceID = async () => {
+    setLoading(true);  // Đặt loading là true ngay khi nhấn nút
+
+    const imageSrc = webcamRef.current.getScreenshot();  // Chụp ảnh từ webcam
+    if (imageSrc) {
+      const imageBlob = dataURLtoBlob(imageSrc);  // Chuyển base64 sang blob
+      const formData = new FormData();
+      formData.append('image', imageBlob, 'face_image.jpg');  // Tạo form-data để gửi file ảnh
+
+      try {
+        const response = await axios.post('http://localhost:8800/auth/login_face', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+
+        // Kiểm tra mã phản hồi (status code)
+        if (response.status === 200) {
+          if (response.data.message === 'Login successful') {
+            alert('Face ID login successful!');
+            navigate('/');
+          } else {
+            alert(`Face ID does not match: ${response.data.message}`);
+          }
+        }
+      }
+      catch (error) {
+        console.error('Error during Face ID login:', error.response ? error.response.data : error.message);
+        alert('An error occurred during login.');
+      } finally {
+        setLoading(false);  // Đặt loading là false sau khi hoàn thành quá trình xử lý
+      }
+    } else {
+      alert('Failed to capture image from webcam');
+      setLoading(false);
+    }
+  };
+
   return (
     <>
       <Grid container direction="column" justifyContent="center" spacing={2}>
+        {/* Đăng nhập bằng Face ID */}
+        <Grid item xs={12}>
+          <Typography variant="h5">Login with Face ID</Typography>
+          <Webcam
+            audio={false}
+            ref={webcamRef}
+            screenshotFormat="image/jpeg"
+            width={720}
+            height={560}
+          />
+          <Button
+            variant="contained"
+            onClick={handleLoginWithFaceID}
+            disabled={loading}
+            fullWidth
+            sx={{ mt: 2 }}
+          >
+            {loading ? 'Processing...' : 'Login with Face ID'}
+          </Button>
+        </Grid>
+
+        <Grid item xs={12}>
+          <Divider />
+          <Typography variant="subtitle1" align="center">OR</Typography>
+          <Divider />
+        </Grid>
+
         <Grid item xs={12}>
           <AnimateButton>
             <Button
@@ -139,8 +223,8 @@ const FirebaseLogin = ({ ...others }) => {
 
       <Formik
         initialValues={{
-          email: 'info@codedthemes.com',
-          password: '123456',
+          email: '',
+          password: '',
           submit: null
         }}
         validationSchema={Yup.object().shape({
