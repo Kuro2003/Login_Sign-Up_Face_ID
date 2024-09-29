@@ -49,6 +49,10 @@ class AuthService:
     def authenticate_by_face(image_path):
         # Đọc ảnh từ file
         image = face_recognition.load_image_file(image_path)
+        
+        if len(face_recognition.face_encodings(image)) == 0:
+            return None
+        
         face_encoding = face_recognition.face_encodings(image)[0]
         
         users = User.query.all()

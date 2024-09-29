@@ -2,6 +2,8 @@ from flask import Blueprint, request, jsonify
 from app.packages.auth.services.AuthService import AuthService   
 import uuid
 import os
+from app.repositories.UserRepository import UserRepository
+
 
 auth_blueprint = Blueprint('auth', __name__)
 
@@ -33,24 +35,32 @@ def register_user():
 
 @auth_blueprint.route('/register_face', methods=['POST'])
 def register_face():
-    user_id = request.form.get('user_id')  # Bạn cần xác định user_id từ client
+    email = request.form.get('email')  # Nhận email từ client
     image_file = request.files.get('image') 
     if image_file is None:
         return jsonify({"message": "No image provided"}), 400
-    image_path = f"./app/images/{user_id}.jpg"
+
+    # Tìm user bằng email
+    user = UserRepository.find_by_email(email)
+    if not user:
+        return jsonify({"message": "User not found"}), 404
+    
+    # Lưu ảnh cho user dựa trên id hoặc email
+    image_path = f"./app/images/{user.id}.jpg"  # Có thể thay bằng user.email nếu cần
     image_file.save(image_path)
     
-    AuthService.save_face_id(image_path, user_id)
+    AuthService.save_face_id(image_path, user.id)
     
     # Xóa file ảnh sau khi lưu face encoding
     os.remove(image_path)
     
-    return jsonify({"message": "Face ID registered successfully"}), 201
-
+    return jsonify({"message": "Face ID registered successfully"}), 200
 
 @auth_blueprint.route('/login_face', methods=['POST'])
 def login_face():
+    print("123123123")
     image_file = request.files.get('image')
+    print(image_file)
     # Tạo tên file ảnh tạm thời dựa trên uuid để tránh ghi đè
     temp_image_path = f"./app/temp_images/{uuid.uuid4()}.jpg"
     image_file.save(temp_image_path)
@@ -63,4 +73,4 @@ def login_face():
     if user:
         return jsonify({"message": "Login successful", "user": user.email}), 200
     else:
-        return jsonify({"message": "Face ID does not match"}), 401
+        return jsonify({"message": "Face ID does not match"}), 200
