@@ -43,14 +43,15 @@ def register_face():
     # Tìm user bằng email
     user = UserRepository.find_by_email(email)
     if not user:
-        return jsonify({"message": "User not found"}), 404
+        return jsonify({"message": "User not found"}), 400
     
     # Lưu ảnh cho user dựa trên id hoặc email
     image_path = f"./app/images/{user.id}.jpg"  # Có thể thay bằng user.email nếu cần
     image_file.save(image_path)
     
-    AuthService.save_face_id(image_path, user.id)
-    
+    if AuthService.save_face_id(image_path, user.id) == 400:
+        return jsonify({"message": "Register Face ID Failed"}), 400
+
     # Xóa file ảnh sau khi lưu face encoding
     os.remove(image_path)
     
@@ -58,11 +59,10 @@ def register_face():
 
 @auth_blueprint.route('/login_face', methods=['POST'])
 def login_face():
-    print("123123123")
     image_file = request.files.get('image')
-    print(image_file)
+    # print(image_file)
     # Tạo tên file ảnh tạm thời dựa trên uuid để tránh ghi đè
-    temp_image_path = f"./app/temp_images/{uuid.uuid4()}.jpg"
+    temp_image_path = f"./app/images/{uuid.uuid4()}.jpg"
     image_file.save(temp_image_path)
     
     user = AuthService.authenticate_by_face(temp_image_path)

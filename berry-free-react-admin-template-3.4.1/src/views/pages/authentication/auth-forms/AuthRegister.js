@@ -91,7 +91,7 @@ const FirebaseRegister = ({ ...others }) => {
       })
       .catch((error) => {
         console.log(error);
-        alert('Error during registration', error);
+        alert('Email already exists', error);
       });
   };
 

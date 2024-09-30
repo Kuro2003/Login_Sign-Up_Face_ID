@@ -78,7 +78,7 @@ const RegisterFaceID = () => {
                 {imageSrc && processingDone ? (
                     <>
                         <Typography variant="h6">Captured Image</Typography>
-                        <img src={imageSrc} alt="Captured" width={720} height={600} style={{ marginTop: '16px' }} />
+                        <img src={imageSrc} alt="Captured" width={720} height={560} style={{ marginTop: '16px' }} />
                     </>
                 ) : (
                     <>
@@ -88,7 +88,7 @@ const RegisterFaceID = () => {
                             ref={webcamRef}
                             screenshotFormat="image/jpeg"
                             width={720}
-                            height={600}
+                            height={560}
                         />
                     </>
                 )}

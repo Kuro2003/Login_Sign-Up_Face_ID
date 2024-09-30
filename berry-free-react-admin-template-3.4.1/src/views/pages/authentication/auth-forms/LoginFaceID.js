@@ -41,7 +41,7 @@ const LoginWithFaceID = () => {
                         alert('Face ID login successful!');
                         navigate('/');
                     } else {
-                        alert(`Face ID does not match: ${response.data.message}`);
+                        alert(`${response.data.message}`);
                     }
                 }
             } catch (error) {

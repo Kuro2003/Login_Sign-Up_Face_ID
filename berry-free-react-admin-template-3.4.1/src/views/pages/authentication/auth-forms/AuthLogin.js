@@ -77,7 +77,7 @@ const FirebaseLogin = ({ ...others }) => {
       })
       .catch((error) => {
         console.log(error);
-        alert('Error during registration', error);
+        alert('Email or password was wrong !!!', error);
       })
   }
 
@@ -142,19 +142,18 @@ const FirebaseLogin = ({ ...others }) => {
             variant="outlined"
             onClick={() => navigate('/pages/login/login-face-id')} // Chuyển hướng đến trang Login Face ID
             fullWidth
-            sx={{ mt: 2 }}
+            size="large"
+            sx={{
+              color: 'grey.700',
+              backgroundColor: theme.palette.grey[50],
+              borderColor: theme.palette.grey[100]
+            }}
           >
             Login with Face ID
           </Button>
         </Grid>
 
-        <Grid item xs={12}>
-          <Divider />
-          <Typography variant="subtitle1" align="center">OR</Typography>
-          <Divider />
-        </Grid>
-
-        <Grid item xs={12}>
+        {/* <Grid item xs={12}>
           <AnimateButton>
             <Button
               disableElevation
@@ -174,7 +173,7 @@ const FirebaseLogin = ({ ...others }) => {
               Sign in with Google
             </Button>
           </AnimateButton>
-        </Grid>
+        </Grid> */}
         <Grid item xs={12}>
           <Box
             sx={{
