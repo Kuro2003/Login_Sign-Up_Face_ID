@@ -20,4 +20,3 @@
 
 ## Link Github: https://github.com/Kuro2003/Login_Face_ID
 
-## Link Video: 
