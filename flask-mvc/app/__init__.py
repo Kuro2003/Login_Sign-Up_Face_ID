@@ -4,14 +4,16 @@ from app.controllers import *
 from flask_sqlalchemy import SQLAlchemy
 from app.config.Database import userdb
 from flask_cors import CORS, cross_origin
+from app.config.AppConfig import Config
 
 def create_app():
     app = Flask(__name__)
     
     # Cấu hình cho app, bao gồm kết nối database
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///user.db'
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config['SECRET_KEY'] = 'cuongnc'
+    app.config['SQLALCHEMY_DATABASE_URI'] = Config.SQLALCHEMY_DATABASE_URI
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = Config.SQLALCHEMY_TRACK_MODIFICATIONS
+    app.config['SECRET_KEY'] = Config.SECRET_KEY
+    
     CORS(app,supports_credentials=True)
     
     # Khởi tạo các thành phần mở rộng

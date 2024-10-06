@@ -1,10 +1,8 @@
 from app.packages.auth.models.User import User
+from app.repositories.BaseRepository import BaseRepository
 
-class UserRepository:
-    @staticmethod
-    def find_by_email(email):
-        return User.query.filter_by(email=email).first()
-    
-    @staticmethod
-    def find_by_id(id):
-        return User.query.filter_by(id=id).first()
+class UserRepository(BaseRepository):
+    def __init__(self):
+        super().__init__(User) # Gọi hàm khởi tạo của BaseRepository và truyền vào model User
+        
+        

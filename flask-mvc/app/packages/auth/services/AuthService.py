@@ -9,7 +9,8 @@ from app.packages.auth.models.User import User
 class AuthService:
     @staticmethod
     def authenticate_user(email, password):
-        user = UserRepository.find_by_email(email)
+        user_repo = UserRepository()
+        user = user_repo.find_by_email(email)
         if user and user.check_password(password):
             session['user_id'] = user.id
             return user

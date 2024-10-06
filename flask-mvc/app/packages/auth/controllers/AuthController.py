@@ -4,7 +4,6 @@ import uuid
 import os
 from app.repositories.UserRepository import UserRepository
 
-
 auth_blueprint = Blueprint('auth', __name__)
 
 # Routes: login
