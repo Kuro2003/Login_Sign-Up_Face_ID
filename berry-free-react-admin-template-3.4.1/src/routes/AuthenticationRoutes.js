@@ -9,6 +9,8 @@ const AuthLogin3 = Loadable(lazy(() => import('views/pages/authentication/authen
 const AuthRegister3 = Loadable(lazy(() => import('views/pages/authentication/authentication3/Register3')));
 const RegisterFaceID = Loadable(lazy(() => import('views/pages/authentication/auth-forms/RegisterFaceID')));
 const LoginFaceID = Loadable(lazy(() => import('views/pages/authentication/auth-forms/LoginFaceID')));
+const ResetPassword = Loadable(lazy(() => import('views/pages/authentication/auth-forms/ResetPassword')));
+
 // ==============================|| AUTHENTICATION ROUTING ||============================== //
 
 const AuthenticationRoutes = {
@@ -30,6 +32,10 @@ const AuthenticationRoutes = {
     {
       path: '/pages/login/login-face-id',
       element: <LoginFaceID />
+    },
+    {
+      path: '/pages/login/reset-password',
+      element: <ResetPassword />
     }
   ]
 };

@@ -26,9 +26,11 @@
 
 2. Bật 1 Terminal khác (lưu ý chạy song song với terminal front end)
 - Di chuyển tơi thư mục flask-mvc
+    - pip install -r requirements.txt
     - Gõ lệnh: python server.py
 
-## Link Github: https://github.com/Kuro2003/Login_Face_ID
+## Link Github: https://github.com/Kuro2003/Login_Face_ID 
 
 ## Link Video: https://youtu.be/1UH5jRoHWsw
 
+Video đã quay ở lần nộp 1 nên chưa có demo reset_password
