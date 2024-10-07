@@ -10,14 +10,18 @@ class User(userdb.Model):
     email = userdb.Column(userdb.String(150), unique=True, nullable=False)
     password = userdb.Column(userdb.String(150), nullable=False)
     face_encoding = userdb.Column(LargeBinary)
-    
+
     def __init__(self, first_name, last_name, email, password):
         self.first_name = first_name
         self.last_name = last_name
         self.email = email
         # Mã hóa mật khẩu trước khi lưu vào DB
-        self.password = generate_password_hash(password).decode('utf8')
+        self.set_password(password)
 
     # Kiểm tra mật khẩu
     def check_password(self, password):
         return check_password_hash(self.password, password)
+    
+    # Set password
+    def set_password(self, password):
+        self.password = generate_password_hash(password).decode('utf8')

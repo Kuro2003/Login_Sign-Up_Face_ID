@@ -13,15 +13,5 @@ from app.config.AppConfig import Config
 
 app = create_app()
 
-#route index
-@app.route('/', methods = ['GET'])
-def index():
-    data = {
-        "title": "Hello World",
-        "body": "Flask simple MVC"
-    }
-    return render_template('index.html.j2', data = data)
-
-
 if __name__ == '__main__':
     app.run(host="localhost", port=Config.PORT, debug=True)

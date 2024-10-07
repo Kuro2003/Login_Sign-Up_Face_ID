@@ -1,12 +1,15 @@
+
+from app.config.Database import userdb
+
 class BaseRepository:
-    # def __init__(self, model, session):
-    def __init__(self, model):
-        print("Base repo")
+    def __init__(self, model, session):
+        # print("Base repo")
         self.model = model
-        # self.session = session
-        
-    def find_by_email(self, email):
-        return self.model.query.filter_by(email=email).first()
+        self.session = session
     
-    def find_by_id(self, id):
-        return self.model.query.filter_by(id=id).first()
+    def add(self, instance):
+        userdb.session.add(instance)
+        userdb.session.commit()
+
+    def update(self):
+        userdb.session.commit()

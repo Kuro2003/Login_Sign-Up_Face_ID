@@ -5,6 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 from app.config.Database import userdb
 from flask_cors import CORS, cross_origin
 from app.config.AppConfig import Config
+from app.controllers.hello import index_blueprint
 
 def create_app():
     app = Flask(__name__)
@@ -20,6 +21,9 @@ def create_app():
     userdb.init_app(app)
     
     with app.app_context():
+        # Route index
+        app.register_blueprint(index_blueprint)
+    
         # Đăng ký các Blueprint hoặc các route khác nếu cần
         app.register_blueprint(auth_blueprint, url_prefix='/auth')
         
