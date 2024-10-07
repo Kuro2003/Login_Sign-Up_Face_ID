@@ -5,8 +5,9 @@
 ## Cấu trúc folder:
 
     21129422
-      |__ berry-free-react-admin-template-3.4.1
-      |__ flask-mvc
+      |_Source
+          |__ berry-free-react-admin-template-3.4.1
+          |__ flask-mvc
       |_ Report
           |_ 21120422 - Requirement Specification.docx
           |_ 21120422 - Requirement Specification.pdf
